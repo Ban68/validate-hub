@@ -5,7 +5,7 @@ import { Candidate } from "../types";
 
 
 const getApiKey = (): string | undefined => {
-  return process.env.API_KEY;
+  return import.meta.env.VITE_API_KEY;
 };
 
 
