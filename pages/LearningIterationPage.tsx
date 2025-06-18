@@ -37,29 +37,26 @@ const LearningIterationPage: React.FC = () => {
     setReflectingId(null);
   };
   
-  // Example for Growth Mindset Dashboard: count invalidated hypotheses
-  // This would ideally come from the Experimentation module's data.
-  // For now, it's a conceptual placeholder.
   const invalidatedHypothesesCount = useAppContext().hypotheses.filter(h => h.status === 'invalidated').length;
 
 
   return (
     <div className="space-y-6">
-      <header className="flex justify-between items-center">
+      <header className="flex flex-col sm:flex-row justify-between sm:items-center space-y-3 sm:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Learning & Iteration</h1>
-          <p className="mt-1 text-gray-700">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Learning & Iteration</h1>
+          <p className="mt-1 text-sm sm:text-base text-gray-700">
             Capture insights, make data-driven decisions, and iterate on your ideas.
           </p>
         </div>
-        <Button onClick={() => openModalForNew()} leftIcon={<ArrowPathIcon className="h-5 w-5 mr-2"/>}>
+        <Button onClick={() => openModalForNew()} leftIcon={<ArrowPathIcon className="h-5 w-5 mr-1 sm:mr-2"/>} className="w-full sm:w-auto">
           New Learning Card
         </Button>
       </header>
 
       {/* Learning Cards Section */}
       <section>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-3">Learning Cards</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">Learning Cards</h2>
         {learningCards.length === 0 ? (
           <Card>
             <p className="text-center text-gray-800 py-8">
@@ -73,7 +70,7 @@ const LearningIterationPage: React.FC = () => {
               return (
                 <Card key={card.id} title={<span className="text-neutral-dark">Learning Card: {new Date(card.date).toLocaleDateString()}</span>}
                   actions={
-                    <div className="flex space-x-2">
+                    <div className="flex flex-wrap gap-2">
                       <Button size="sm" variant="outline" onClick={() => openModalForEdit(card.id)}>Edit</Button>
                       <Button size="sm" variant="danger" onClick={() => confirm('Delete this learning card?') && deleteLearningCard(card.id)}>Delete</Button>
                     </div>
@@ -119,26 +116,24 @@ const LearningIterationPage: React.FC = () => {
         />
       )}
 
-      {/* Placeholder for Pivot/Persevere Decision Assistant */}
       <Card title="Pivot or Persevere? (Decision Assistant - Coming Soon)">
         <p className="text-sm text-gray-800">
           Based on your validated learning, this tool will provide frameworks and AI-powered prompts to help you decide on strategic changes (pivot) or continued iteration (persevere).
         </p>
-         <div className="mt-4 p-4 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+         <div className="mt-4 p-4 bg-gray-100 rounded flex items-center justify-center text-gray-500 text-sm">
             AI-driven decision support will appear here.
         </div>
       </Card>
       
-      {/* Placeholder for Growth Mindset Dashboard */}
        <Card title="Growth Mindset Dashboard (Conceptual)">
         <p className="text-sm text-gray-800 mb-3">
             Embrace "failures" as learning opportunities. Track your journey of invalidated assumptions and the valuable lessons learned.
         </p>
-        <div className="flex items-center space-x-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
-            <XCircleIcon className="h-10 w-10 text-amber-500" />
+        <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-amber-50 rounded-lg border border-amber-200">
+            <XCircleIcon className="h-8 w-8 sm:h-10 sm:w-10 text-amber-500 shrink-0" />
             <div>
-                <p className="text-2xl font-semibold text-amber-700">{invalidatedHypothesesCount}</p>
-                <p className="text-sm text-amber-600">Hypotheses Invalidated & Lessons Learned</p>
+                <p className="text-xl sm:text-2xl font-semibold text-amber-700">{invalidatedHypothesesCount}</p>
+                <p className="text-xs sm:text-sm text-amber-600">Hypotheses Invalidated & Lessons Learned</p>
             </div>
         </div>
         <p className="text-xs text-gray-500 mt-2">

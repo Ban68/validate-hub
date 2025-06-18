@@ -9,8 +9,8 @@ const SettingsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-gray-700">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Settings</h1>
+        <p className="mt-1 text-sm sm:text-base text-gray-700">
           Manage your application preferences and integrations. (More settings coming soon)
         </p>
       </header>
@@ -18,7 +18,7 @@ const SettingsPage: React.FC = () => {
         {apiKeyStatus === 'ok' && apiKey && (
           <div className="p-4 bg-green-50 border border-green-200 rounded-md">
             <p className="text-green-700 font-semibold">Gemini API Key is configured.</p>
-            <p className="text-xs text-gray-500 mt-1">Key: <code>{apiKey.substring(0,4)}...{apiKey.substring(apiKey.length-4)}</code> (Masked for security)</p>
+            <p className="text-xs text-gray-500 mt-1 break-all">Key: <code>{apiKey.substring(0,4)}...{apiKey.substring(apiKey.length-4)}</code> (Masked for security)</p>
           </div>
         )}
         {apiKeyStatus === 'missing' && (
