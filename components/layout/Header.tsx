@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '../../hooks/useAppContext';
-import Input from '../ui/Input'; // Assuming Input component is available
+import Input from '../ui/Input'; 
+import { MenuIcon } from '../../constants'; // Assuming MenuIcon is added to constants
 
 // Simple Pencil Icon for editability indication
 const PencilIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -10,15 +11,18 @@ const PencilIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+interface HeaderProps {
+  onToggleSidebar: () => void;
+}
 
-const Header: React.FC = () => {
+const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   const { projectName, updateProjectName } = useAppContext();
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(projectName);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setEditedName(projectName); // Sync with context if projectName changes externally
+    setEditedName(projectName); 
   }, [projectName]);
 
   useEffect(() => {
@@ -38,7 +42,7 @@ const Header: React.FC = () => {
 
   const saveName = () => {
     if (editedName.trim() === '') {
-      setEditedName(projectName); // Revert if empty
+      setEditedName(projectName); 
     } else {
       updateProjectName(editedName.trim());
     }
@@ -49,7 +53,7 @@ const Header: React.FC = () => {
     if (e.key === 'Enter') {
       saveName();
     } else if (e.key === 'Escape') {
-      setEditedName(projectName); // Revert to original name from context
+      setEditedName(projectName); 
       setIsEditingName(false);
     }
   };
@@ -59,31 +63,38 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="h-20 bg-white shadow-md flex items-center justify-between px-6">
-      <div className="group relative"> {/* Added group for hover effect on pencil */}
-        {isEditingName ? (
-          <Input
-            ref={inputRef}
-            type="text"
-            value={editedName}
-            onChange={handleNameChange}
-            onKeyDown={handleNameKeyDown}
-            onBlur={handleNameBlur}
-            className="text-xl font-semibold text-primary-DEFAULT border-b-2 border-primary-DEFAULT focus:ring-0 focus:border-primary-dark p-0 m-0 h-auto"
-            // Basic styling, adjust as needed
-          />
-        ) : (
-          <div className="flex items-center cursor-pointer" onClick={handleNameClick} title="Click to edit project name">
-            <h2 className="text-xl font-semibold text-neutral-dark">
-              Project: <span className="text-primary-DEFAULT hover:underline">{projectName}</span>
-            </h2>
-            <PencilIcon className="h-4 w-4 ml-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
-          </div>
-        )}
+    <header className="h-20 bg-white shadow-md flex items-center justify-between px-4 sm:px-6 shrink-0"> {/* Added shrink-0 */}
+      <div className="flex items-center">
+        <button
+          onClick={onToggleSidebar}
+          className="md:hidden text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-DEFAULT mr-3 p-1 rounded"
+          aria-label="Open sidebar"
+        >
+          <MenuIcon className="h-6 w-6" />
+        </button>
+        <div className="group relative"> 
+          {isEditingName ? (
+            <Input
+              ref={inputRef}
+              type="text"
+              value={editedName}
+              onChange={handleNameChange}
+              onKeyDown={handleNameKeyDown}
+              onBlur={handleNameBlur}
+              className="text-lg sm:text-xl font-semibold text-primary-DEFAULT border-b-2 border-primary-DEFAULT focus:ring-0 focus:border-primary-dark p-0 m-0 h-auto"
+            />
+          ) : (
+            <div className="flex items-center cursor-pointer" onClick={handleNameClick} title="Click to edit project name">
+              <h2 className="text-lg sm:text-xl font-semibold text-neutral-dark truncate max-w-[150px] sm:max-w-xs md:max-w-md"> {/* Added truncate and max-width */}
+                Project: <span className="text-primary-DEFAULT hover:underline">{projectName}</span>
+              </h2>
+              <PencilIcon className="h-4 w-4 ml-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity duration-150 shrink-0" />
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex items-center space-x-4">
-        {/* Placeholder for notifications, user menu, etc. */}
-        <div className="w-8 h-8 bg-accent-DEFAULT rounded-full flex items-center justify-center text-white font-bold">
+        <div className="w-8 h-8 bg-accent-DEFAULT rounded-full flex items-center justify-center text-white font-bold shrink-0">
           U
         </div>
       </div>

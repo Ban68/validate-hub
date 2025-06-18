@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
@@ -18,14 +18,29 @@ import { ROUTES } from './constants';
 
 const App: React.FC = () => {
   const { apiKeyStatus } = useAppContext();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  const toggleMobileSidebar = useCallback(() => {
+    setIsMobileSidebarOpen(prev => !prev);
+  }, []);
 
   return (
     <HashRouter>
-      <div className="flex h-screen bg-gray-100">
-        <Sidebar />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <Header />
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
+      <div className="flex h-screen bg-gray-100 relative">
+        <Sidebar isOpen={isMobileSidebarOpen} onClose={toggleMobileSidebar} />
+        
+        {/* Backdrop for mobile sidebar */}
+        {isMobileSidebarOpen && (
+          <div 
+            className="fixed inset-0 z-30 bg-black opacity-50 md:hidden" 
+            onClick={toggleMobileSidebar}
+            aria-hidden="true"
+          ></div>
+        )}
+
+        <div className="flex-1 flex flex-col overflow-hidden md:ml-64"> {/* md:ml-64 for desktop sidebar space */}
+          <Header onToggleSidebar={toggleMobileSidebar} />
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 sm:p-6"> {/* Adjusted padding for small screens */}
             {apiKeyStatus === 'missing' && (
               <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
                 <p className="font-bold">API Key Error</p>
