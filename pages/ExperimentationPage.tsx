@@ -9,7 +9,7 @@ import TestCardForm from '../components/experimentation/TestCardForm';
 import MvpForm from '../components/experimentation/MvpForm';
 import { BeakerIcon, LightBulbIcon, DocumentTextIcon, CheckCircleIcon, XCircleIcon, ClockIcon, SparklesIcon } from '../constants';
 
-// ExperimentationPage: Manages hypotheses, test cards, and MVPs.
+
 const ExperimentationPage: React.FC = () => {
   const { 
     hypotheses, deleteHypothesis, getHypothesisById, critiqueHypothesis,
@@ -57,16 +57,16 @@ const ExperimentationPage: React.FC = () => {
         case 'pending':
         case 'planned':
         case 'ideation':
-            return <ClockIcon className="h-5 w-5 text-yellow-500 mr-1 shrink-0" aria-label={status}/>;
+            return <ClockIcon className="h-5 w-5 text-yellow-500 mr-1" aria-label={status}/>;
         case 'testing':
         case 'running':
         case 'building':
-            return <BeakerIcon className="h-5 w-5 text-blue-500 mr-1 shrink-0" aria-label={status}/>;
+            return <BeakerIcon className="h-5 w-5 text-blue-500 mr-1" aria-label={status}/>;
         case 'validated':
         case 'completed':
-            return <CheckCircleIcon className="h-5 w-5 text-green-500 mr-1 shrink-0" aria-label={status}/>;
+            return <CheckCircleIcon className="h-5 w-5 text-green-500 mr-1" aria-label={status}/>;
         case 'invalidated':
-            return <XCircleIcon className="h-5 w-5 text-red-500 mr-1 shrink-0" aria-label={status}/>;
+            return <XCircleIcon className="h-5 w-5 text-red-500 mr-1" aria-label={status}/>;
         default:
             return null;
     }
@@ -76,34 +76,34 @@ const ExperimentationPage: React.FC = () => {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Experimentation Hub</h1>
-        <p className="mt-1 text-sm sm:text-base text-gray-700">
+        <h1 className="text-3xl font-bold text-gray-900">Experimentation Hub</h1>
+        <p className="mt-1 text-gray-700">
           Design, run, and track experiments to validate your hypotheses and MVPs.
         </p>
       </header>
 
       {/* Hypotheses Section */}
       <section>
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 space-y-3 sm:space-y-0">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Hypotheses</h2>
-          <Button onClick={openHypothesisModalForNew} leftIcon={<LightBulbIcon className="h-5 w-5 mr-1 sm:mr-2"/>} className="w-full sm:w-auto">New Hypothesis</Button>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-900">Hypotheses</h2>
+          <Button onClick={openHypothesisModalForNew} leftIcon={<LightBulbIcon className="h-5 w-5 mr-2"/>}>New Hypothesis</Button>
         </div>
         {hypotheses.length === 0 ? <Card><p className="text-center text-gray-800 py-4">No hypotheses defined yet.</p></Card> : (
           <div className="space-y-4">
             {hypotheses.map(h => (
               <Card key={h.id} title={
                 <div className="flex items-center">
-                    {getStatusIcon(h.status)} <span className="text-neutral-dark truncate" title={h.description}>Hypothesis</span> 
+                    {getStatusIcon(h.status)} <span className="text-neutral-dark">Hypothesis</span>
                 </div>} 
                 actions={
-                <div className="flex flex-wrap gap-2">
+                <div className="flex space-x-2">
                   <Button size="sm" variant="outline" onClick={() => openHypothesisModalForEdit(h.id)}>Edit</Button>
                   <Button size="sm" variant="danger" onClick={() => confirm('Delete hypothesis?') && deleteHypothesis(h.id)}>Delete</Button>
                 </div>
               }>
-                <p className="text-sm sm:text-base text-gray-800 whitespace-pre-wrap">{h.description}</p>
+                <p className="text-gray-800 whitespace-pre-wrap">{h.description}</p>
                 <p className="text-xs text-gray-500 mt-1">Created: {new Date(h.createdAt).toLocaleDateString()}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 flex space-x-2">
                     <Button size="sm" variant="secondary" onClick={() => openTestCardModalForNew(h.id)}>+ New Test Card</Button>
                     {apiKeyStatus === 'ok' && (
                         <Button 
@@ -132,9 +132,9 @@ const ExperimentationPage: React.FC = () => {
 
       {/* Test Cards Section */}
       <section>
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 space-y-3 sm:space-y-0">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Test Cards</h2>
-          <Button onClick={() => openTestCardModalForNew()} leftIcon={<DocumentTextIcon className="h-5 w-5 mr-1 sm:mr-2"/>} className="w-full sm:w-auto">New Test Card</Button>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-900">Test Cards</h2>
+          <Button onClick={() => openTestCardModalForNew()} leftIcon={<DocumentTextIcon className="h-5 w-5 mr-2"/>}>New Test Card</Button>
         </div>
         {testCards.length === 0 ? <Card><p className="text-center text-gray-800 py-4">No test cards created yet.</p></Card> : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -143,15 +143,15 @@ const ExperimentationPage: React.FC = () => {
                 return (
                     <Card key={tc.id} title={
                         <div className="flex items-center">
-                            {getStatusIcon(tc.status)} <span className="text-neutral-dark truncate" title={tc.testDescription}>Test Card</span>
+                            {getStatusIcon(tc.status)} <span className="text-neutral-dark">Test Card</span>
                         </div>
                     } actions={
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex space-x-2">
                         <Button size="sm" variant="outline" onClick={() => openTestCardModalForEdit(tc.id)}>Edit</Button>
                         <Button size="sm" variant="danger" onClick={() => confirm('Delete test card?') && deleteTestCard(tc.id)}>Delete</Button>
                         </div>
                     }>
-                        <p className="text-sm text-gray-800"><strong className="text-neutral-dark">Testing Hypothesis:</strong> {linkedHypo?.description.substring(0,70) || tc.hypothesisId}{linkedHypo && linkedHypo.description.length > 70 ? '...' : ''}</p>
+                        <p className="text-sm text-gray-800"><strong className="text-neutral-dark">Testing Hypothesis:</strong> {linkedHypo?.description.substring(0,100) || tc.hypothesisId}{linkedHypo && linkedHypo.description.length > 100 ? '...' : ''}</p>
                         <p className="text-sm text-gray-800 mt-1"><strong className="text-neutral-dark">Test:</strong> {tc.testDescription}</p>
                         <p className="text-sm text-gray-800 mt-1"><strong className="text-neutral-dark">Metric:</strong> {tc.metric}</p>
                         <p className="text-sm text-gray-800 mt-1"><strong className="text-neutral-dark">Success Criteria:</strong> {tc.successCriteria}</p>
@@ -166,19 +166,19 @@ const ExperimentationPage: React.FC = () => {
 
       {/* MVPs Section */}
       <section>
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 space-y-3 sm:space-y-0">
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Minimum Viable Products (MVPs)</h2>
-          <Button onClick={openMvpModalForNew} leftIcon={<BeakerIcon className="h-5 w-5 mr-1 sm:mr-2"/>} className="w-full sm:w-auto">New MVP</Button>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-900">Minimum Viable Products (MVPs)</h2>
+          <Button onClick={openMvpModalForNew} leftIcon={<BeakerIcon className="h-5 w-5 mr-2"/>}>New MVP</Button>
         </div>
         {mvps.length === 0 ? <Card><p className="text-center text-gray-800 py-4">No MVPs defined yet.</p></Card> : (
           <div className="space-y-4">
             {mvps.map(mvp => (
               <Card key={mvp.id} title={
                 <div className="flex items-center">
-                    {getStatusIcon(mvp.status)} <span className="text-neutral-dark truncate" title={mvp.name}>MVP: {mvp.name}</span>
+                    {getStatusIcon(mvp.status)} <span className="text-neutral-dark">MVP: {mvp.name}</span>
                 </div>
               } actions={
-                <div className="flex flex-wrap gap-2">
+                <div className="flex space-x-2">
                   <Button size="sm" variant="outline" onClick={() => openMvpModalForEdit(mvp.id)}>Edit</Button>
                   <Button size="sm" variant="danger" onClick={() => confirm('Delete MVP?') && deleteMvp(mvp.id)}>Delete</Button>
                 </div>

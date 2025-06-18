@@ -38,6 +38,8 @@ const ValuePropositionCanvasEditor: React.FC = () => {
 
   useEffect(() => {
     const initialData = getInitialCanvasData();
+    // Only set if substantially different to avoid loops, or consider focused elements.
+    // This effect primarily handles initialization and external updates to valueProposition.
      setCanvasData(prevLocalData => {
         const getValue = (fieldName: keyof ValuePropositionCanvas, contextValue: string) => {
           if (document.activeElement?.getAttribute('name') === fieldName) {
@@ -57,7 +59,7 @@ const ValuePropositionCanvasEditor: React.FC = () => {
           productsServices: getValue('productsServices', initialData.productsServices),
           painRelievers: getValue('painRelievers', initialData.painRelievers),
           gainCreators: getValue('gainCreators', initialData.gainCreators),
-          aiMessagingSuggestions: newAiSuggestions, 
+          aiMessagingSuggestions: newAiSuggestions, // Always take AI suggestions from context
         };
     });
   }, [valueProposition, currentProjectData, getInitialCanvasData]);
@@ -79,6 +81,7 @@ const ValuePropositionCanvasEditor: React.FC = () => {
   );
 
   useEffect(() => {
+    // Only trigger update if canvasData has meaningfully changed from what valueProposition (context) holds.
     if (JSON.stringify(canvasData) !== JSON.stringify(valueProposition || getInitialCanvasData())) {
         debouncedUpdateAppContext(canvasData);
     }
@@ -91,6 +94,7 @@ const ValuePropositionCanvasEditor: React.FC = () => {
     }
     setIsGenerating(true);
     await generateVpMessaging(canvasData.id);
+    // Context update will flow back via useEffect updating canvasData.aiMessagingSuggestions
     setIsGenerating(false);
   };
 
@@ -101,18 +105,18 @@ const ValuePropositionCanvasEditor: React.FC = () => {
   return (
     <div className="space-y-6">
       <Card title="Value Proposition Canvas">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
           {/* Customer Profile Side */}
-          <div className="space-y-4 p-3 sm:p-4 border border-blue-200 rounded-lg bg-blue-50">
-            <h3 className="text-lg sm:text-xl font-semibold text-blue-700 text-center mb-3">Customer Profile</h3>
+          <div className="space-y-4 p-4 border border-blue-200 rounded-lg bg-blue-50">
+            <h3 className="text-xl font-semibold text-blue-700 text-center mb-3">Customer Profile</h3>
             <TextArea
               label="Customer Jobs"
               name="customerJobs"
               value={canvasData.customerJobs}
               onChange={handleChange}
               placeholder="What tasks are customers trying to perform? What problems are they trying to solve? (Can be synced from Problem Discovery)"
-              rows={4} 
-              className="bg-white text-gray-800 text-sm"
+              rows={5}
+              className="bg-white text-gray-800"
             />
             <TextArea
               label="Pains"
@@ -120,8 +124,8 @@ const ValuePropositionCanvasEditor: React.FC = () => {
               value={canvasData.customerPains}
               onChange={handleChange}
               placeholder="What annoys your customers? What are their negative experiences, risks, and obstacles related to their jobs? (Can be synced from Problem Discovery)"
-              rows={4}
-              className="bg-white text-gray-800 text-sm"
+              rows={5}
+              className="bg-white text-gray-800"
             />
             <TextArea
               label="Gains"
@@ -129,22 +133,22 @@ const ValuePropositionCanvasEditor: React.FC = () => {
               value={canvasData.customerGains}
               onChange={handleChange}
               placeholder="What outcomes and benefits do your customers desire? What would make them happy? (Can be synced from Problem Discovery)"
-              rows={4}
-              className="bg-white text-gray-800 text-sm"
+              rows={5}
+              className="bg-white text-gray-800"
             />
           </div>
 
           {/* Value Map Side */}
-          <div className="space-y-4 p-3 sm:p-4 border border-green-200 rounded-lg bg-green-50">
-            <h3 className="text-lg sm:text-xl font-semibold text-green-700 text-center mb-3">Value Map</h3>
+          <div className="space-y-4 p-4 border border-green-200 rounded-lg bg-green-50">
+            <h3 className="text-xl font-semibold text-green-700 text-center mb-3">Value Map</h3>
             <TextArea
               label="Products & Services"
               name="productsServices"
               value={canvasData.productsServices}
               onChange={handleChange}
               placeholder="What products and services do you offer that help customers get their jobs done?"
-              rows={4}
-              className="bg-white text-gray-800 text-sm"
+              rows={5}
+              className="bg-white text-gray-800"
             />
             <TextArea
               label="Pain Relievers"
@@ -152,8 +156,8 @@ const ValuePropositionCanvasEditor: React.FC = () => {
               value={canvasData.painRelievers}
               onChange={handleChange}
               placeholder="How do your products/services alleviate customer pains?"
-              rows={4}
-              className="bg-white text-gray-800 text-sm"
+              rows={5}
+              className="bg-white text-gray-800"
             />
             <TextArea
               label="Gain Creators"
@@ -161,8 +165,8 @@ const ValuePropositionCanvasEditor: React.FC = () => {
               value={canvasData.gainCreators}
               onChange={handleChange}
               placeholder="How do your products/services create customer gains and outcomes they desire?"
-              rows={4}
-              className="bg-white text-gray-800 text-sm"
+              rows={5}
+              className="bg-white text-gray-800"
             />
           </div>
         </div>
@@ -177,13 +181,12 @@ const ValuePropositionCanvasEditor: React.FC = () => {
             isAiFeature
             isLoading={isGenerating}
             disabled={apiKeyStatus === 'missing' || isGenerating}
-            className="w-full sm:w-auto"
           >
             Generate Messaging Snippets
           </Button>
           {apiKeyStatus === 'missing' && <p className="text-xs text-red-500 mt-1">API Key not configured.</p>}
           
-          {isGenerating && <div className="mt-3"><TextArea label="AI Suggestions:" value="Generating..." rows={4} readOnly className="bg-gray-100 text-gray-800"/></div>}
+          {isGenerating && <div className="mt-3"><TextArea label="AI Suggestions:" value="Generating..." rows={5} readOnly className="bg-gray-100 text-gray-800"/></div>}
           
           {canvasData.aiMessagingSuggestions && !isGenerating && (
             <div className="mt-4 p-4 bg-primary-DEFAULT/10 rounded-md">

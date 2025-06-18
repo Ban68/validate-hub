@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
@@ -18,27 +18,14 @@ import { ROUTES } from './constants';
 
 const App: React.FC = () => {
   const { apiKeyStatus } = useAppContext();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  // Close sidebar on route change on mobile
-  useEffect(() => {
-    if (isSidebarOpen && window.innerWidth < 768) { // md breakpoint
-      setIsSidebarOpen(false);
-    }
-  }, [location.pathname, isSidebarOpen]);
-
 
   return (
     <HashRouter>
       <div className="flex h-screen bg-gray-100">
-        <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
+        <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
-          <Header onToggleSidebar={toggleSidebar} />
-          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6">
+          <Header />
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">
             {apiKeyStatus === 'missing' && (
               <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
                 <p className="font-bold">API Key Error</p>
@@ -60,14 +47,6 @@ const App: React.FC = () => {
             </Routes>
           </main>
         </div>
-        {/* Overlay for mobile sidebar */}
-        {isSidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-            onClick={toggleSidebar}
-            aria-hidden="true"
-          ></div>
-        )}
       </div>
     </HashRouter>
   );

@@ -32,6 +32,7 @@ const blockPlaceholders: Record<BusinessModelBlockType, string> = {
 
 const financialBlockTypes: BusinessModelBlockType[] = ['costStructure', 'revenueStreams'];
 
+// Helper to get a default BMC structure
 const getDefaultBMC = (): BusinessModelCanvasData => ({
   id: 'default-bmc',
   blocks: {
@@ -69,6 +70,7 @@ const BusinessModelCanvasEditor: React.FC = () => {
 
   const [canvasData, setCanvasData] = useState<BusinessModelCanvasData>(getInitialCanvasData());
 
+  // Effect to update local canvasData from context (e.g., on initial load or external change)
   useEffect(() => {
     const contextBMC = getInitialCanvasData();
     setCanvasData(prevLocalData => {
@@ -103,7 +105,7 @@ const BusinessModelCanvasEditor: React.FC = () => {
 
   const handleChange = (blockType: BusinessModelBlockType, field: keyof BusinessModelBlockData, value: string) => {
     setCanvasData(prev => {
-      if (!prev) return getDefaultBMC(); 
+      if (!prev) return getDefaultBMC(); // Should not happen if initialized
       const updatedBlock = { ...(prev.blocks[blockType] || {}), [field]: value };
       return { ...prev, blocks: { ...prev.blocks, [blockType]: updatedBlock } };
     });
@@ -112,10 +114,15 @@ const BusinessModelCanvasEditor: React.FC = () => {
   const debouncedUpdateAppContext = useCallback(
     (dataToUpdate: BusinessModelCanvasData) => {
       const timer = setTimeout(() => {
+        // Update all blocks. This assumes updateBusinessModelBlock can handle being called multiple times
+        // or a new context function `updateBusinessModelCanvas(dataToUpdate)` exists.
+        // For now, let's call updateBusinessModelBlock for each block.
+        // A more optimized version would compare and only update changed blocks.
         (Object.keys(dataToUpdate.blocks) as BusinessModelBlockType[]).forEach(blockType => {
+          // Check if block data has actually changed before updating to prevent infinite loops if context updates are not careful
            if (businessModel && JSON.stringify(dataToUpdate.blocks[blockType]) !== JSON.stringify(businessModel.blocks[blockType])) {
             updateBusinessModelBlock(blockType, dataToUpdate.blocks[blockType]);
-          } else if (!businessModel) { 
+          } else if (!businessModel) { // If context was null, update all
             updateBusinessModelBlock(blockType, dataToUpdate.blocks[blockType]);
           }
         });
@@ -126,6 +133,7 @@ const BusinessModelCanvasEditor: React.FC = () => {
   );
   
   useEffect(() => {
+    // Only call debounced update if canvasData has changed from what context provides
     if (JSON.stringify(canvasData) !== JSON.stringify(businessModel || getInitialCanvasData())) {
         debouncedUpdateAppContext(canvasData);
     }
@@ -141,22 +149,16 @@ const BusinessModelCanvasEditor: React.FC = () => {
     const isFinancialBlock = financialBlockTypes.includes(blockType);
     const isVpBlock = blockType === 'valuePropositions';
 
-    let rows = isVpBlock ? 6 : 4; // Default rows for md+
-    if (typeof window !== 'undefined' && window.innerWidth < 768) { // md breakpoint
-        rows = isVpBlock ? 5 : 3; // Fewer rows for mobile
-    }
-
-
     return (
-      <Card key={blockType} title={blockTitles[blockType]} className="h-full flex flex-col" titleClassName="py-3 px-3 sm:px-4" bodyClassName="p-3 sm:p-4">
+      <Card key={blockType} title={blockTitles[blockType]} className="h-full flex flex-col">
         <div className="flex-grow">
         <TextArea
           name={`${blockType}-content`}
           value={blockData.content}
           onChange={(e) => handleChange(blockType, 'content', e.target.value)}
           placeholder={blockPlaceholders[blockType]}
-          rows={rows}
-          className="text-xs sm:text-sm text-gray-800"
+          rows={isVpBlock ? 8 : 6}
+          className="text-sm text-gray-800"
           readOnly={isVpBlock && blockData.content.startsWith("Linked from VP Canvas:")}
         />
         {isVpBlock && blockData.content.startsWith("Linked from VP Canvas:") && (
@@ -164,14 +166,14 @@ const BusinessModelCanvasEditor: React.FC = () => {
         )}
         </div>
         {isFinancialBlock && (
-          <div className="mt-auto pt-2 sm:pt-3">
+          <div className="mt-auto pt-3">
             <Input
               label="Financial Hypotheses"
               name={`${blockType}-financialHypotheses`}
               value={blockData.financialHypotheses || ''}
               onChange={(e) => handleChange(blockType, 'financialHypotheses', e.target.value)}
-              placeholder={blockType === 'costStructure' ? "e.g., CAC, server costs" : "e.g., Price, LTV"}
-              className="text-xs sm:text-sm text-gray-800"
+              placeholder={blockType === 'costStructure' ? "e.g., CAC, server costs, salaries" : "e.g., Price per unit, LTV, conversion rates"}
+              className="text-xs text-gray-800"
             />
           </div>
         )}
@@ -181,20 +183,20 @@ const BusinessModelCanvasEditor: React.FC = () => {
   
   return (
     <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-10 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-10 gap-4">
             <div className="md:col-span-2">{renderBlock('keyPartners')}</div>
             <div className="md:col-span-2">
                 {renderBlock('keyActivities')}
-                <div className="mt-3 sm:mt-4">{renderBlock('keyResources')}</div>
+                <div className="mt-4">{renderBlock('keyResources')}</div>
             </div>
             <div className="md:col-span-2">
                 {renderBlock('valuePropositions')}
-                 <div className="mt-3 sm:mt-4">{renderBlock('channels')}</div> {/* This might become channels & customer relationships */}
+                 <div className="mt-4">{renderBlock('channels')}</div>
             </div>
-             <div className="md:col-span-2">{renderBlock('customerRelationships')}</div>
+            <div className="md:col-span-2">{renderBlock('customerRelationships')}</div>
             <div className="md:col-span-2">{renderBlock('customerSegments')}</div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {renderBlock('costStructure')}
             {renderBlock('revenueStreams')}
         </div>

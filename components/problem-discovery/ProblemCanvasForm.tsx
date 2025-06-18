@@ -42,6 +42,9 @@ const ProblemCanvasForm: React.FC = () => {
   );
 
   useEffect(() => {
+    // Only call debounced update if localData has actually changed from what context provides for id 'default-project'
+    // This comparison helps prevent unnecessary updates if localData is set from currentProjectData
+    // and then immediately triggers this effect.
     if (JSON.stringify(localData) !== JSON.stringify(currentProjectData || initialLocalData)) {
         debouncedUpdateAppContext(localData);
     }
@@ -50,20 +53,24 @@ const ProblemCanvasForm: React.FC = () => {
   useEffect(() => {
     if (currentProjectData) {
       setLocalData(prevLocalData => {
+        // Helper to decide whether to update a field from context or keep local value
         const getValue = (fieldName: keyof ProblemCanvasData, contextValue: string) => {
+          // If the field is currently focused, keep the local value
           if (document.activeElement?.getAttribute('name') === fieldName) {
             return prevLocalData[fieldName];
           }
+          // Otherwise, update from context if it's different from current local value
           return prevLocalData[fieldName] !== contextValue ? contextValue : prevLocalData[fieldName];
         };
 
         return {
-          ...prevLocalData, 
-          id: currentProjectData.id || 'default-project', 
+          ...prevLocalData, // Start with previous local data
+          id: currentProjectData.id || 'default-project', // Ensure ID is always present
           jobsToBeDone: getValue('jobsToBeDone', currentProjectData.jobsToBeDone),
           pains: getValue('pains', currentProjectData.pains),
           gains: getValue('gains', currentProjectData.gains),
           innovatorsBiasCheckInput: getValue('innovatorsBiasCheckInput', currentProjectData.innovatorsBiasCheckInput),
+          // AI-generated field, should generally take from context if it changes
           innovatorsBiasCheckResult: currentProjectData.innovatorsBiasCheckResult,
         };
       });
@@ -106,6 +113,9 @@ const ProblemCanvasForm: React.FC = () => {
     if (result.error) {
       alert(`Error checking bias: ${result.error}`);
     } else if (result.rephrasedProblem) {
+      // This directly updates localData and will be picked up by the debounced context update.
+      // The context update will then flow back via the other useEffect,
+      // which should correctly set innovatorsBiasCheckResult without disturbing other fields.
       setLocalData(prev => ({ ...prev, innovatorsBiasCheckResult: result.rephrasedProblem || "No specific rephrasing provided." }));
     }
   };
@@ -124,7 +134,7 @@ const ProblemCanvasForm: React.FC = () => {
               value={localData.jobsToBeDone}
               onChange={handleChange}
               placeholder="What tasks are customers trying to get done? What problems are they trying to solve?"
-              rows={5} 
+              rows={6}
             />
              <p className="text-xs text-gray-700">Describe the core task or goal your customer is trying to achieve. Be specific.</p>
           </div>
@@ -135,9 +145,9 @@ const ProblemCanvasForm: React.FC = () => {
               value={localData.pains}
               onChange={handleChange}
               placeholder="What annoys customers before, during, or after getting the job done? (e.g., risks, obstacles, undesired outcomes)"
-              rows={5}
+              rows={6}
             />
-            <Button onClick={() => handleGetSuggestions('Pains')} isLoading={loadingStates.pains} size="sm" variant="secondary" isAiFeature disabled={isApiDisabled || !localData.jobsToBeDone.trim()} className="w-full sm:w-auto">
+            <Button onClick={() => handleGetSuggestions('Pains')} isLoading={loadingStates.pains} size="sm" variant="secondary" isAiFeature disabled={isApiDisabled || !localData.jobsToBeDone.trim()}>
               Get AI Suggestions for Pains
             </Button>
           </div>
@@ -148,9 +158,9 @@ const ProblemCanvasForm: React.FC = () => {
               value={localData.gains}
               onChange={handleChange}
               placeholder="What outcomes and benefits do customers desire? (e.g., required, expected, desired, unexpected gains)"
-              rows={5}
+              rows={6}
             />
-            <Button onClick={() => handleGetSuggestions('Gains')} isLoading={loadingStates.gains} size="sm" variant="secondary" isAiFeature disabled={isApiDisabled || !localData.jobsToBeDone.trim()} className="w-full sm:w-auto">
+            <Button onClick={() => handleGetSuggestions('Gains')} isLoading={loadingStates.gains} size="sm" variant="secondary" isAiFeature disabled={isApiDisabled || !localData.jobsToBeDone.trim()}>
               Get AI Suggestions for Gains
             </Button>
           </div>
@@ -167,9 +177,9 @@ const ProblemCanvasForm: React.FC = () => {
           value={localData.innovatorsBiasCheckInput}
           onChange={handleChange}
           placeholder="e.g., 'Parents struggle to find reliable babysitters on short notice for evening outings.'"
-          rows={3}
+          rows={4}
         />
-        <Button onClick={handleBiasCheck} isLoading={loadingStates.biasCheck} className="mt-4 w-full sm:w-auto" isAiFeature disabled={isApiDisabled || !localData.innovatorsBiasCheckInput.trim()}>
+        <Button onClick={handleBiasCheck} isLoading={loadingStates.biasCheck} className="mt-4" isAiFeature disabled={isApiDisabled || !localData.innovatorsBiasCheckInput.trim()}>
           Check Bias with AI
         </Button>
         {loadingStates.biasCheck && <Spinner size="sm" className="mt-2" />}

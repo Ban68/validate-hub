@@ -7,17 +7,17 @@ const CollaborationPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Collaboration Hub</h1>
-        <p className="mt-1 text-sm sm:text-base text-gray-700">
+        <h1 className="text-3xl font-bold text-gray-900">Collaboration Hub</h1>
+        <p className="mt-1 text-gray-700">
           Work with your team, mentors, and advisors effectively throughout the validation process.
         </p>
       </header>
 
       <Card title="Shared Understanding" className="bg-primary-DEFAULT/5">
-        <div className="flex flex-col sm:flex-row items-start space-y-3 sm:space-y-0 sm:space-x-4">
-          <UserGroupIcon className="h-10 w-10 sm:h-12 sm:w-12 text-primary-DEFAULT mt-1 shrink-0"/>
+        <div className="flex items-start space-x-4">
+          <UserGroupIcon className="h-12 w-12 text-primary-DEFAULT mt-1"/>
           <div>
-            <h3 className="text-md sm:text-lg font-semibold text-primary-dark">Working Together in ValidateHub</h3>
+            <h3 className="text-lg font-semibold text-primary-dark">Working Together in ValidateHub</h3>
             <p className="text-sm text-gray-800 mt-1">
               Currently, ValidateHub operates with a single project context. All data you input (Problem Canvas, Interviews, Hypotheses, etc.) is part of this shared workspace.
             </p>
@@ -52,7 +52,7 @@ const CollaborationPage: React.FC = () => {
             </p>
           </div>
         </div>
-         <div className="mt-6 p-4 bg-gray-100 rounded flex items-center justify-center text-gray-500 text-sm">
+         <div className="mt-6 p-4 bg-gray-100 rounded flex items-center justify-center text-gray-500">
             Advanced collaboration features are under development. Stay tuned!
         </div>
       </Card>

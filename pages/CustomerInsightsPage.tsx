@@ -4,8 +4,8 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { useAppContext } from '../hooks/useAppContext';
 import { Interview } from '../types';
-import InterviewForm from '../components/customer-insights/InterviewForm';
-import { UsersIcon, SparklesIcon } from '../constants'; 
+import InterviewForm from '../components/customer-insights/InterviewForm'; // To be created
+import { UsersIcon, SparklesIcon } from '../constants'; // Assuming SparklesIcon is for AI features
 
 const CustomerInsightsPage: React.FC = () => {
   const { interviews, deleteInterview, getInterviewById, apiKeyStatus, generateInterviewSummary } = useAppContext();
@@ -36,31 +36,33 @@ const CustomerInsightsPage: React.FC = () => {
     setSummarizingId(null);
   };
   
-  const interviewQuota = 10; 
+  // Basic Quota Tracker (example)
+  const interviewQuota = 10; // Target number of interviews
   const progress = Math.min((interviews.length / interviewQuota) * 100, 100);
 
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col sm:flex-row justify-between sm:items-center space-y-3 sm:space-y-0">
+      <header className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Customer Insights</h1>
-          <p className="mt-1 text-sm sm:text-base text-gray-700">
+          <h1 className="text-3xl font-bold text-gray-900">Customer Insights</h1>
+          <p className="mt-1 text-gray-700">
             Log, categorize, and analyze customer interviews to uncover deep insights.
           </p>
         </div>
-        <Button onClick={openModalForNew} leftIcon={<UsersIcon className="h-5 w-5 mr-1 sm:mr-2"/>} className="w-full sm:w-auto">
+        <Button onClick={openModalForNew} leftIcon={<UsersIcon className="h-5 w-5 mr-2"/>}>
           Log New Interview
         </Button>
       </header>
 
+      {/* Interview Quota Tracker Example */}
       <Card title="Interview Quota Tracker">
         <p className="text-sm text-gray-800 mb-2">
           Aim to talk to enough people! Recommended: {interviewQuota} interviews for this phase.
         </p>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 sm:h-4">
+        <div className="w-full bg-gray-200 rounded-full h-4">
           <div
-            className="bg-primary-DEFAULT h-2.5 sm:h-4 rounded-full transition-all duration-500 ease-out"
+            className="bg-primary-DEFAULT h-4 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
             role="progressbar"
             aria-valuenow={progress}
@@ -68,7 +70,7 @@ const CustomerInsightsPage: React.FC = () => {
             aria-valuemax={100}
           ></div>
         </div>
-        <p className="text-right text-xs sm:text-sm font-medium text-gray-900 mt-1">
+        <p className="text-right text-sm font-medium text-gray-900 mt-1">
           {interviews.length} / {interviewQuota} interviews logged ({progress.toFixed(0)}%)
         </p>
       </Card>
@@ -84,7 +86,7 @@ const CustomerInsightsPage: React.FC = () => {
           {interviews.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((interview) => (
             <Card key={interview.id} title={`Interview: ${new Date(interview.date).toLocaleDateString()}`}
               actions={
-                <div className="flex flex-wrap gap-2">
+                <div className="flex space-x-2">
                   <Button size="sm" variant="outline" onClick={() => openModalForEdit(interview.id)}>Edit</Button>
                   <Button size="sm" variant="danger" onClick={() => confirm('Are you sure you want to delete this interview?') && deleteInterview(interview.id)}>Delete</Button>
                 </div>

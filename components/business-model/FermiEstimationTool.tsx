@@ -154,7 +154,6 @@ const FermiEstimationForm: React.FC<FermiEstimationFormProps> = ({ isOpen, onClo
                     isLoading={isAssessing}
                     disabled={isAssessing || !formData.estimatedOutcome.trim()}
                     variant="secondary"
-                    className="w-full sm:w-auto"
                 >
                     AI Assess Viability
                 </Button>
@@ -198,7 +197,7 @@ const FermiEstimationTool: React.FC = () => {
     return (
         <Card title="Fermi Estimations & Quick Financials"
             actions={
-                <Button onClick={openModalForNew} size="sm" className="w-full sm:w-auto">New Estimation</Button>
+                <Button onClick={openModalForNew} size="sm">New Estimation</Button>
             }
         >
             <p className="text-sm text-gray-800 mb-4">
@@ -211,13 +210,13 @@ const FermiEstimationTool: React.FC = () => {
                     {fermiEstimations.map(est => (
                         <Card key={est.id} title={<span className="text-neutral-dark">{est.name}</span>} className="bg-gray-50"
                             actions={
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex space-x-2">
                                     <Button size="sm" variant="outline" onClick={() => openModalForEdit(est.id)}>Edit</Button>
                                     <Button size="sm" variant="danger" onClick={() => confirm('Delete estimation?') && deleteFermiEstimation(est.id)}>Delete</Button>
                                 </div>
                             }
                         >
-                            <div className="text-sm space-y-1 text-neutral-dark">
+                            <div className="text-sm space-y-1 text-neutral-dark"> {/* text-neutral-dark on bg-gray-50 is good */}
                                 <p><strong className="text-neutral-dark">Outcome:</strong> {est.estimatedOutcome}</p>
                                 <p><strong className="text-neutral-dark">Logic:</strong> {est.calculationLogic}</p>
                                 <div>
